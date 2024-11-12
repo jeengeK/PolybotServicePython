@@ -1,5 +1,6 @@
 from pathlib import Path
 from matplotlib.image import imread, imsave
+import random
 
 
 def rgb2gray(rgb):
@@ -52,16 +53,37 @@ class Img:
 
     def rotate(self):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # Rotate the image 90 degrees clockwise
+        self.data = [[self.data[y][x] for y in reversed(range(len(self.data)))] for x in range(len(self.data[0]))]
 
     def salt_n_pepper(self):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # Apply salt and pepper noise
+        for y in range(len(self.data)):
+            for x in range(len(self.data[0])):
+                rnd = random.random()
+                if rnd < 0.2:
+                    self.data[y][x] = 255
+                elif rnd > 0.8:
+                    self.data[y][x] = 0
 
     def concat(self, other_img, direction='horizontal'):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # Concatenate another image horizontally or vertically
+        if direction == "horizontal":
+            if len(self.data) != len(other_img.data):
+                raise RuntimeError("Images have different heights, cannot concatenate horizontally.")
+            self.data = [self_row + other_row for self_row, other_row in zip(self.data, other_img.data)]
+        elif direction == "vertical":
+            if len(self.data[0]) != len(other_img.data[0]):
+                raise RuntimeError("Images have different widths, cannot concatenate vertically.")
+            self.data += other_img.data
+        else:
+            raise ValueError("Invalid direction; choose 'horizontal' or 'vertical'.")
 
     def segment(self):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # Segment the image based on intensity threshold
+        for y in range(len(self.data)):
+            for x in range(len(self.data[0])):
+                self.data[y][x] = 255 if self.data[y][x] > threshold else 0
