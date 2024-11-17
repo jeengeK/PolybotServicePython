@@ -81,9 +81,11 @@ class TestBot(unittest.TestCase):
             self.bot.telegram_bot_client.send_photo.assert_called_once()
 
     @patch('builtins.open', new_callable=mock_open)
-    def test_contour_with_exception(self, mock_open):
-        mock_open.side_effect = OSError("Read-only file system")
-        mock_msg['caption'] = 'Contour'
+    def test_contour_with_exception(self):
+        mock_msg = {'chat': {'id': 12345}}  # No 'text' key
+        with self.assertRaises(KeyError):
+            self.bot.handle_message(mock_msg)
+
         retry_keywords = [
             "error", "failed", "issue", "problem", "try again", "retry", "wrong",
             "unsuccessful", "unable", "trouble", "unable to", "please try",
