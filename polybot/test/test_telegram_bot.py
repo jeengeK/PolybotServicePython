@@ -63,22 +63,18 @@ class TestBot(unittest.TestCase):
         self.bot = bot
 
     def test_contour(self):
-        @patch('polybot.bot.TeleBot')
-        def test_handle_message_no_text_or_caption(self, MockBot):
-            mock_msg = {
-                'message_id': 350,
-                'chat': {'id': 1243002839, 'type': 'private'}
-            }
+        import unittest
+        from unittest.mock import MagicMock
 
-            bot_instance = MockBot.return_value
+        class TestBot(unittest.TestCase):
+            def test_contour_with_exception(self):
+                # Test logic here
 
-            try:
-                self.bot.handle_message(mock_msg)
-            except KeyError as err:
-                self.fail(f"Unexpected KeyError: {err}")
+                # Ensure your bot's handle_message method is properly mocked
+                self.bot.handle_message = MagicMock(side_effect=Exception("Error"))
 
-            mock_method.assert_called_once()
-            self.bot.telegram_bot_client.send_photo.assert_called_once()
+                with self.assertRaises(KeyError):  # Expecting KeyError for missing 'text'
+                    self.bot.handle_message(mock_msg)
 
     @patch('builtins.open', new_callable=mock_open)
     def test_contour_with_exception(self):

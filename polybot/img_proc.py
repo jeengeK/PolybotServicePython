@@ -44,12 +44,18 @@ class Img:
         self.data = result
 
     def contour(self):
-        for i, row in enumerate(self.data):
-            res = []
-            for j in range(1, len(row)):
-                res.append(abs(row[j-1] - row[j]))
+        import unittest
+        from unittest.mock import MagicMock
 
-            self.data[i] = res
+        class TestBot(unittest.TestCase):
+            def test_contour_with_exception(self):
+                # Test logic here
+
+                # Ensure your bot's handle_message method is properly mocked
+                self.bot.handle_message = MagicMock(side_effect=Exception("Error"))
+
+                with self.assertRaises(KeyError):  # Expecting KeyError for missing 'text'
+                    self.bot.handle_message(mock_msg)
 
     def rotate(self):
         # TODO remove the `raise` below, and write your implementation
