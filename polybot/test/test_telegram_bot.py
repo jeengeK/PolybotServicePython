@@ -64,7 +64,7 @@ class TestBot(unittest.TestCase):
 
     def test_contour(self):
         @patch('polybot.bot.TeleBot')
-        def test_handle_message_no_text_or_caption(self, MockBot):
+        def test_handle_message_no_text_or_caption(self, MockBot, mock_method=None):
             mock_msg = {
                 'message_id': 350,
                 'chat': {'id': 1243002839, 'type': 'private'}
