@@ -1,7 +1,8 @@
-import unittest
-from unittest.mock import patch, Mock, mock_open, MagicMock
-from polybot.bot import ImageProcessingBot
 import os
+import unittest
+from unittest.mock import patch, Mock, mock_open
+
+from polybot.bot import ImageProcessingBot
 
 img_path = 'polybot/test/beatles.jpeg' if '/polybot/test' not in os.getcwd() else 'beatles.jpeg'
 
@@ -63,22 +64,7 @@ class TestBot(unittest.TestCase):
         self.bot = bot
 
     def test_contour(self):
-        @patch('polybot.bot.TeleBot')
-        def test_handle_message_no_text_or_caption(self, MockBot):
-            mock_msg = {
-                'message_id': 350,
-                'chat': {'id': 1243002839, 'type': 'private'}
-            }
-
-            bot_instance = MockBot.return_value
-
-            try:
-                self.bot.handle_message(mock_msg)
-            except KeyError as err:
-                self.fail(f"Unexpected KeyError: {err}")
-
-            mock_method.assert_called_once()
-            self.bot.telegram_bot_client.send_photo.assert_called_once()
+        pass
 
     @patch('builtins.open', new_callable=mock_open)
     def handle_message(self, msg):
@@ -90,7 +76,7 @@ class TestBot(unittest.TestCase):
             if 'photo' in msg:
                 # Handle image message
                 photo = msg['photo'][-1]  # Get the highest resolution photo
-                file_id = photo['file_id']
+                var = photo['file_id']
                 # Process the image...
 
             # Check if message contains text
@@ -106,4 +92,7 @@ class TestBot(unittest.TestCase):
             print(f"Error handling message: {str(e)}")
             if 'chat' in msg:
                 self.send_text(msg['chat']['id'], f'Error processing message: {str(e)}')
+
+    def send_text(self, chat_id, param):
+        pass
 
