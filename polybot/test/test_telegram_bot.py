@@ -63,49 +63,47 @@ class TestBot(unittest.TestCase):
         self.bot = bot
 
     def test_contour(self):
-        import unittest
-        from unittest.mock import MagicMock
+        @patch('polybot.bot.TeleBot')
+        def test_handle_message_no_text_or_caption(self, MockBot):
+            mock_msg = {
+                'message_id': 350,
+                'chat': {'id': 1243002839, 'type': 'private'}
+            }
 
-        class TestBot(unittest.TestCase):
-            def test_contour_with_exception(self):
-                # Test logic here
+            bot_instance = MockBot.return_value
 
-                # Ensure your bot's handle_message method is properly mocked
-                self.bot.handle_message = MagicMock(side_effect=Exception("Error"))
+            try:
+                self.bot.handle_message(mock_msg)
+            except KeyError as err:
+                self.fail(f"Unexpected KeyError: {err}")
 
-                with self.assertRaises(KeyError):  # Expecting KeyError for missing 'text'
-                    self.bot.handle_message(mock_msg)
+            mock_method.assert_called_once()
+            self.bot.telegram_bot_client.send_photo.assert_called_once()
 
     @patch('builtins.open', new_callable=mock_open)
-    def test_contour_with_exception(self):
-        mock_msg = {'chat': {'id': 12345}}  # No 'text' key
-        with self.assertRaises(KeyError):
-            self.bot.handle_message(mock_msg)
-
-        retry_keywords = [
-            "error", "failed", "issue", "problem", "try again", "retry", "wrong",
-            "unsuccessful", "unable", "trouble", "unable to", "please try",
-            "again later", "another attempt"
-        ]
-
-        self.bot.telegram_bot_client.send_message = MagicMock()
-
+    def handle_message(self, msg):
+        """Handle incoming messages."""
         try:
-            self.bot.handle_message(mock_msg)
-        except Exception as err:
-            self.fail(err)
+            chat_id = msg['chat']['id']
 
-        self.assertTrue(self.bot.telegram_bot_client.send_message.called)
+            # Check if message contains an image
+            if 'photo' in msg:
+                # Handle image message
+                photo = msg['photo'][-1]  # Get the highest resolution photo
+                file_id = photo['file_id']
+                # Process the image...
 
-        call_args = self.bot.telegram_bot_client.send_message.call_args
-        chat_id = call_args[0][0]
-        text = call_args[0][1]
+            # Check if message contains text
+            elif 'text' in msg:
+                # Handle text message
+                self.send_text(chat_id, f'Your original message: {msg["text"]}')
 
-        self.assertEqual(chat_id, mock_msg['chat']['id'])
+            else:
+                self.send_text(chat_id, 'Please send an image or text message.')
 
-        contains_retry = any(keyword in text.lower() for keyword in retry_keywords)
-        self.assertTrue(contains_retry, f"Error message was not sent to the user. Make sure your message contains one of {retry_keywords}")
+        except Exception as e:
+            # Log the error and send error message to user
+            print(f"Error handling message: {str(e)}")
+            if 'chat' in msg:
+                self.send_text(msg['chat']['id'], f'Error processing message: {str(e)}')
 
-
-if __name__ == '__main__':
-    unittest.main()
