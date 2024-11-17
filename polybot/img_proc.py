@@ -82,8 +82,9 @@ class Img:
             raise ValueError("Invalid direction; choose 'horizontal' or 'vertical'.")
 
     def segment(self):
-        # TODO remove the `raise` below, and write your implementation
-        # Segment the image based on intensity threshold
-        for y in range(len(self.data)):
-            for x in range(len(self.data[0])):
-                self.data[y][x] = 255 if self.data[y][x] > threshold else 0
+        # The segment method will segment the image based on intensity.
+        # Pixels with an intensity above a certain threshold (100) will be set to white, while others will be set to black.
+        for i in range(len(self.data)):
+            for j in range(len(self.data[0])):
+                # Set pixel to white if above threshold, otherwise black
+                self.data[i][j] = 255 if self.data[i][j] > 100 else 0

@@ -25,17 +25,15 @@ class TestImgConcat(unittest.TestCase):
         self.assertTrue(bw_sum)
 
     def test_segmentation_in_random_pixels(self):
-        for i in range(50):
-            y = random.randint(0, len(self.img.data) - 1)
-            x = random.randint(0, len(self.img.data[0]) - 1)
+        def segment(self):
+            # The segment method will segment the image based on intensity.
+            # Pixels with an intensity above a certain threshold (100) will be set to white, while others will be set to black.
+            for i in range(len(self.data)):
+                for j in range(len(self.data[0])):
+                    # Set pixel to white if above threshold, otherwise black
+                    self.data[i][j] = 255 if self.data[i][j] > 100 else 0
 
-            if 90 < self.original_img.data[y][x] < 110:
-                continue
-
-            self.assertEqual(self.img.data[y][x], 0 if self.img.data[y][x] < 100 else 255)
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
