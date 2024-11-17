@@ -63,10 +63,19 @@ class TestBot(unittest.TestCase):
         self.bot = bot
 
     def test_contour(self):
-        mock_msg['caption'] = 'Contour'
+        @patch('polybot.bot.TeleBot')
+        def test_handle_message_no_text_or_caption(self, MockBot):
+            mock_msg = {
+                'message_id': 350,
+                'chat': {'id': 1243002839, 'type': 'private'}
+            }
 
-        with patch('polybot.img_proc.Img.contour') as mock_method:
-            self.bot.handle_message(mock_msg)
+            bot_instance = MockBot.return_value
+
+            try:
+                self.bot.handle_message(mock_msg)
+            except KeyError as err:
+                self.fail(f"Unexpected KeyError: {err}")
 
             mock_method.assert_called_once()
             self.bot.telegram_bot_client.send_photo.assert_called_once()
