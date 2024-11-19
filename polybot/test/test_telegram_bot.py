@@ -86,7 +86,7 @@ class TestBot(unittest.TestCase):
         try:
             chat_id = msg['chat']['id']
 
-            # Check if message contains an image
+
             if 'photo' in msg:
                 # Handle image message
                 photo = msg['photo'][-1]  # Get the highest resolution photo
