@@ -1,6 +1,8 @@
 from pathlib import Path
 from matplotlib.image import imread, imsave
 import random
+import os
+from PIL import Image, ImageFilter
 
 
 def rgb2gray(rgb):
@@ -17,6 +19,8 @@ class Img:
         """
         self.path = Path(path)
         self.data = rgb2gray(imread(path)).tolist()
+        self.height = len(self.data)
+        self.width = len(self.data[0])
 
     def save_img(self):
         """
@@ -43,49 +47,57 @@ class Img:
 
         self.data = result
 
+
     def contour(self):
-        import unittest
-        from unittest.mock import MagicMock
+        for i, row in enumerate(self.data):
+            res = []
+            for j in range(1, len(row)):
+                res.append(abs(row[j-1] - row[j]))
 
-        class TestBot(unittest.TestCase):
-            def test_contour_with_exception(self):
-                # Test logic here
-
-                # Ensure your bot's handle_message method is properly mocked
-                self.bot.handle_message = MagicMock(side_effect=Exception("Error"))
-
-                with self.assertRaises(KeyError):  # Expecting KeyError for missing 'text'
-                    self.bot.handle_message(mock_msg)
+            self.data[i] = res
 
     def rotate(self):
-        # TODO remove the `raise` below, and write your implementation
-        # Rotate the image 90 degrees clockwise
-        self.data = [[self.data[y][x] for y in reversed(range(len(self.data)))] for x in range(len(self.data[0]))]
+        # One loop iterates over columns in the original image the other loops iterates overs rows reversing the order to achieve clockwise rotation
+        # The image is represented as a 2D list (self.data) where self.data[i][j] refers to the intensity of the pixel at the i'th row and j'th column
+        rotated_data = [[self.data[self.height - j - 1][i] for j in range(len(self.data))]
+                        for i in range(len(self.data[0]))]
+        self.data = rotated_data
 
     def salt_n_pepper(self):
-        # TODO remove the `raise` below, and write your implementation
-        # Apply salt and pepper noise
-        for y in range(len(self.data)):
-            for x in range(len(self.data[0])):
-                rnd = random.random()
-                if rnd < 0.2:
-                    self.data[y][x] = 255
-                elif rnd > 0.8:
-                    self.data[y][x] = 0
+        # this method adds random noise by setting some pixels to white (255) and others to black (0).
+        # the probability threshholds for salt (white) are 0.2 and 0.8 for pepper (black)
+
+        for i in range(len(self.data)):
+            for j in range(len(self.data[0])):
+                rand_val = random.random()
+                if rand_val < 0.2:
+                    self.data[i][j] = 255  # Salt (white)
+                elif rand_val > 0.8:
+                    self.data[i][j] = 0
 
     def concat(self, other_img, direction='horizontal'):
-        # TODO remove the `raise` below, and write your implementation
-        # Concatenate another image horizontally or vertically
-        if direction == "horizontal":
+        # The concat method joins two images, self and other_img
+        # Either horizontally (side-by-side) or vertically (stacked), depending on the direction argument.
+
+        if direction == 'horizontal':
+            # Ensure both images have the same height
             if len(self.data) != len(other_img.data):
-                raise RuntimeError("Images have different heights, cannot concatenate horizontally.")
-            self.data = [self_row + other_row for self_row, other_row in zip(self.data, other_img.data)]
-        elif direction == "vertical":
+                raise RuntimeError("Images must have the same height for horizontal concatenation.")
+
+            concatenated_data = [row1 + row2 for row1, row2 in zip(self.data, other_img.data)]
+
+        elif direction == 'vertical':
+            # Ensure both images have the same width
             if len(self.data[0]) != len(other_img.data[0]):
-                raise RuntimeError("Images have different widths, cannot concatenate vertically.")
-            self.data += other_img.data
+                raise RuntimeError("Images must have the same width for vertical concatenation.")
+
+            concatenated_data = self.data + other_img.data
+
         else:
-            raise ValueError("Invalid direction; choose 'horizontal' or 'vertical'.")
+            raise ValueError("Direction must be either 'horizontal' or 'vertical'.")
+
+        self.data = concatenated_data
+
 
     def segment(self):
         # The segment method will segment the image based on intensity.
